@@ -14,8 +14,8 @@ def test_sieve_contains_a() -> None:
 def test_sieve_invert_a() -> None:
     s1 = Sieve("5@0")
     s2 = ~s1
-    assert str(s3) == "Sieve{!5@0}"
-    assert 4 in s1
+    assert str(s2) == "Sieve{!(5@0)}"
+    assert 4 in s2
 
 def test_sieve_xor_a() -> None:
     s1 = Sieve("3@2")
