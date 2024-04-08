@@ -88,4 +88,22 @@ mod tests {
         let s3 = s1.__xor__(&s2);
         assert_eq!(s3.__repr__(), "Sieve{3@2^5@1}");
     }
+
+    #[test]
+    fn test_sieve_or_a() {
+        let s1 = Sieve::new("3@2".to_string());
+        let s2 = Sieve::new("5@1".to_string());
+
+        let s3 = s1.__or__(&s2);
+        assert_eq!(s3.__repr__(), "Sieve{3@2|5@1}");
+    }
+
+    #[test]
+    fn test_sieve_and_a() {
+        let s1 = Sieve::new("3@2".to_string());
+        let s2 = Sieve::new("5@1".to_string());
+
+        let s3 = s1.__and__(&s2);
+        assert_eq!(s3.__repr__(), "Sieve{3@2&5@1}");
+    }
 }
