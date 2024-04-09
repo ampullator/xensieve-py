@@ -1,9 +1,7 @@
-use ::xensieve::Sieve as SieveRS;
 use ::xensieve::IterValue as IterValueRS;
+use ::xensieve::Sieve as SieveRS;
 
 use pyo3::prelude::*;
-
-
 
 // #[pyclass]
 // struct IterState {
@@ -19,7 +17,6 @@ use pyo3::prelude::*;
 //         slf.iter.next()
 //     }
 // }
-
 
 // #[pyclass]
 // struct IterValue {
@@ -37,8 +34,6 @@ use pyo3::prelude::*;
 //         // slf.inner.next()
 //     }
 // }
-
-
 
 #[pyclass(frozen)]
 struct Sieve {
@@ -85,10 +80,6 @@ impl Sieve {
 
     //--------------------------------------------------------------------------
 }
-
-
-
-
 
 /// A Python module implemented in Rust.
 #[pymodule]
