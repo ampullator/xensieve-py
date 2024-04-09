@@ -42,3 +42,8 @@ def test_iter_value_a() -> None:
     post = list(s1.iter_value(0, 100))
     assert post == [0, 2, 7, 8, 14, 20, 21, 26, 28, 32, 35, 38, 42, 44, 49, 50, 56, 62, 63, 68, 70, 74, 77, 80, 84, 86, 91, 92, 98]
 
+def test_iter_interval_a() -> None:
+    s1 = Sieve("7@2|9@1")
+    post = list(s1.iter_interval(0, 100))
+    assert post == [1, 7, 1, 6, 3, 4, 5, 2, 7, 7, 2, 5, 4, 3, 6, 1, 7, 1, 6, 3, 4, 5, 2]
+
