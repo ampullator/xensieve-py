@@ -34,6 +34,24 @@ impl IterInterval {
     }
 }
 
+
+#[pyclass(unsendable)]
+struct IterState {
+    iter: Box<dyn Iterator<Item = bool>>,
+}
+
+#[pymethods]
+impl IterState {
+    fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
+        slf
+    }
+
+    fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<bool> {
+        slf.iter.next()
+    }
+}
+
+
 #[pyclass(frozen)]
 struct Sieve {
     pub(crate) s: SieveRS,
@@ -88,6 +106,13 @@ impl Sieve {
     fn iter_interval(&self, start: i64, stop: i64) -> IterInterval {
         let iter = self.s.iter_interval(start as i128..stop as i128);
         IterInterval {
+            iter: Box::new(iter),
+        }
+    }
+
+    fn iter_state(&self, start: i64, stop: i64) -> IterState {
+        let iter = self.s.iter_state(start as i128..stop as i128);
+        IterState {
             iter: Box::new(iter),
         }
     }
@@ -170,6 +195,15 @@ mod tests {
         assert_eq!(it1.iter.next(), Some(7));
         assert_eq!(it1.iter.next(), Some(1));
         assert_eq!(it1.iter.next(), Some(6));
+    }
+
+    #[test]
+    fn test_iter_state_a() {
+        let s1 = Sieve::new("7@2|9@1".to_string());
+        let mut it1 = s1.iter_state(1, 40);
+        assert_eq!(it1.iter.next(), Some(true));
+        assert_eq!(it1.iter.next(), Some(true));
+        assert_eq!(it1.iter.next(), Some(false));
     }
 
 }
