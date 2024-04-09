@@ -2,38 +2,27 @@ use ::xensieve::IterValue as IterValueRS;
 use ::xensieve::Sieve as SieveRS;
 
 use pyo3::prelude::*;
+use pyo3::PyAny;
 
-// #[pyclass]
-// struct IterState {
-//     iter: Box<dyn Iterator<Item = PyObject> + Send>,
-// }
 
-// #[pymethods]
-// impl IterState {
-//     fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
-//         slf
-//     }
-//     fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<PyObject> {
-//         slf.iter.next()
-//     }
-// }
 
-// #[pyclass]
-// struct IterValue {
-//     inner: IterValueRS<dyn Iterator<Item = i128>>,
-// }
+#[pyclass(unsendable)]
+struct IterValue {
+    // inner: Box<dyn Iterator<Item = i128>>, // any type that implements Iterator trait
+    iter: Box<dyn Iterator<Item = i128>>,
 
-// #[pymethods]
-// impl IterValue {
-//     fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
-//         slf
-//     }
+}
 
-//     fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<i128> {
-//         None
-//         // slf.inner.next()
-//     }
-// }
+#[pymethods]
+impl IterValue {
+    fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
+        slf
+    }
+
+    fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<i128> {
+        slf.iter.next()
+    }
+}
 
 #[pyclass(frozen)]
 struct Sieve {
@@ -79,6 +68,11 @@ impl Sieve {
     }
 
     //--------------------------------------------------------------------------
+    fn iter_value(&self, py_range: &PyAny) -> IterValue {
+        let iter = self.s.iter_value(0..=10);
+        let boxed_iter: Box<dyn Iterator<Item = i128>> = Box::new(iter);
+        IterValue { iter: boxed_iter }
+    }
 }
 
 /// A Python module implemented in Rust.
