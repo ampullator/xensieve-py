@@ -1,5 +1,44 @@
 use ::xensieve::Sieve as SieveRS;
+use ::xensieve::IterValue as IterValueRS;
+
 use pyo3::prelude::*;
+
+
+
+// #[pyclass]
+// struct IterState {
+//     iter: Box<dyn Iterator<Item = PyObject> + Send>,
+// }
+
+// #[pymethods]
+// impl IterState {
+//     fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
+//         slf
+//     }
+//     fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<PyObject> {
+//         slf.iter.next()
+//     }
+// }
+
+
+// #[pyclass]
+// struct IterValue {
+//     inner: IterValueRS<dyn Iterator<Item = i128>>,
+// }
+
+// #[pymethods]
+// impl IterValue {
+//     fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
+//         slf
+//     }
+
+//     fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<i128> {
+//         None
+//         // slf.inner.next()
+//     }
+// }
+
+
 
 #[pyclass(frozen)]
 struct Sieve {
@@ -46,6 +85,10 @@ impl Sieve {
 
     //--------------------------------------------------------------------------
 }
+
+
+
+
 
 /// A Python module implemented in Rust.
 #[pymodule]
