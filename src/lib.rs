@@ -34,7 +34,6 @@ impl IterInterval {
     }
 }
 
-
 #[pyclass(unsendable)]
 struct IterState {
     iter: Box<dyn Iterator<Item = bool>>,
@@ -50,7 +49,6 @@ impl IterState {
         slf.iter.next()
     }
 }
-
 
 #[pyclass(frozen)]
 struct Sieve {
@@ -205,5 +203,4 @@ mod tests {
         assert_eq!(it1.iter.next(), Some(true));
         assert_eq!(it1.iter.next(), Some(false));
     }
-
 }
