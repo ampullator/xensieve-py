@@ -50,6 +50,7 @@ impl IterState {
     }
 }
 
+/// The representation of a Xenakis Sieve, constructed from a string notation of one or more Residual classes combined with logical operators. This implementation, backed by a Rust implementation, follows the Python implementation in Ariza (2005), with significant performance and interface enhancements: https://direct.mit.edu/comj/article/29/2/40/93957
 #[pyclass(frozen)]
 struct Sieve {
     pub(crate) s: SieveRS,
@@ -68,32 +69,38 @@ impl Sieve {
         self.s.to_string()
     }
 
+    /// Return true if the provided integer is included within the Sieve.
     fn __contains__(&self, v: i64) -> bool {
         self.s.contains(v as i128)
     }
 
     //--------------------------------------------------------------------------
+    /// Return the inverse of this Sieve.
     fn __invert__(&self) -> Self {
         let new: SieveRS = !self.s.clone();
         Self { s: new }
     }
 
+    /// Return the XOR combination (or symmetric difference) of the provided Sieve with this Sieve.
     fn __xor__(&self, other: &Self) -> Self {
         let new: SieveRS = self.s.clone() ^ other.s.clone();
         Self { s: new }
     }
 
+    /// Return the OR combination (or union) of the provided Sieve with this Sieve.
     fn __or__(&self, other: &Self) -> Self {
         let new: SieveRS = self.s.clone() | other.s.clone();
         Self { s: new }
     }
 
+    /// Return the AND combination (or intersection) of the provided Sieve with this Sieve.
     fn __and__(&self, other: &Self) -> Self {
         let new: SieveRS = self.s.clone() & other.s.clone();
         Self { s: new }
     }
 
     //--------------------------------------------------------------------------
+    /// Return an iterator of the integers defined within this Sieve, given an inclusive start integer and in exclusive stop integer.
     fn iter_value(&self, start: i64, stop: i64) -> IterValue {
         let iter = self.s.iter_value(start as i128..stop as i128);
         IterValue {
@@ -101,6 +108,7 @@ impl Sieve {
         }
     }
 
+    /// Return an iterator of the interval width between defined integers within this Sieve, given an inclusive start integer and in exclusive stop integer.
     fn iter_interval(&self, start: i64, stop: i64) -> IterInterval {
         let iter = self.s.iter_interval(start as i128..stop as i128);
         IterInterval {
@@ -108,6 +116,7 @@ impl Sieve {
         }
     }
 
+    /// Return an iterator of the Boolean states of this Sieve, given an inclusive start integer and in exclusive stop integer.
     fn iter_state(&self, start: i64, stop: i64) -> IterState {
         let iter = self.s.iter_state(start as i128..stop as i128);
         IterState {
