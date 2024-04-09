@@ -47,3 +47,7 @@ def test_iter_interval_a() -> None:
     post = list(s1.iter_interval(0, 100))
     assert post == [1, 7, 1, 6, 3, 4, 5, 2, 7, 7, 2, 5, 4, 3, 6, 1, 7, 1, 6, 3, 4, 5, 2]
 
+def test_iter_state_a() -> None:
+    s1 = Sieve("4@2|5@1")
+    post = list(s1.iter_state(0, 20))
+    assert post == [False, True, True, False, False, False, True, False, False, False, True, True, False, False, True, False, True, False, True, False]
