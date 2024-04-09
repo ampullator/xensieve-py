@@ -1,16 +1,10 @@
-use ::xensieve::IterValue as IterValueRS;
 use ::xensieve::Sieve as SieveRS;
-
 use pyo3::prelude::*;
-use pyo3::PyAny;
 
-
-
-#[pyclass(unsendable)]
+#[pyclass(unsendable)] // decline making this sharable between threads
 struct IterValue {
-    // inner: Box<dyn Iterator<Item = i128>>, // any type that implements Iterator trait
+    // a boxed iterator of integers; it wraps a Sieve IterValueRS
     iter: Box<dyn Iterator<Item = i128>>,
-
 }
 
 #[pymethods]
@@ -68,14 +62,14 @@ impl Sieve {
     }
 
     //--------------------------------------------------------------------------
-    fn iter_value(&self, py_range: &PyAny) -> IterValue {
-        let iter = self.s.iter_value(0..=10);
-        let boxed_iter: Box<dyn Iterator<Item = i128>> = Box::new(iter);
-        IterValue { iter: boxed_iter }
+    fn iter_value(&self, start: i64, stop: i64) -> IterValue {
+        let iter = self.s.iter_value(start as i128..stop as i128);
+        IterValue {
+            iter: Box::new(iter),
+        }
     }
 }
 
-/// A Python module implemented in Rust.
 #[pymodule]
 fn xensieve(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Sieve>()?;
@@ -133,5 +127,15 @@ mod tests {
 
         let s3 = s1.__and__(&s2);
         assert_eq!(s3.__repr__(), "Sieve{3@2&5@1}");
+    }
+
+    //--------------------------------------------------------------------------
+
+    #[test]
+    fn test_iter_value_a() {
+        let s1 = Sieve::new("7@2|9@1".to_string());
+        let mut it1 = s1.iter_value(0, 40);
+        assert_eq!(it1.iter.next(), Some(1));
+        assert_eq!(it1.iter.next(), Some(2));
     }
 }
