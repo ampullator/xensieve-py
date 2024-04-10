@@ -51,11 +51,11 @@ While all Sieves are, by definition, periodic, combinations of Residuals can res
 The Sieves shown above can be created with `xensieve.Sieve` and used to produce iterators of integers, Boolean states, or interval widths. The `Sieve` constructor accepts arbitrarily complex Sieve expressions.
 
 ```python
-from xensieve import Sieve
+>>> from xensieve import Sieve
 
-s1 = Sieve("5@0")
-s2 = Sieve("30@10")
-s3 = Sieve("(5@0|4@2)&!30@10")
+>>> s1 = Sieve("5@0")
+>>> s2 = Sieve("30@10")
+>>> s3 = Sieve("(5@0|4@2)&!30@10")
 ```
 
 The `iter_value()` method takes a range (defined by start and stop integers) that can be used to "drive" the Sieve. The iterator yields the subset of integers contained within the Sieve.
