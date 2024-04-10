@@ -24,5 +24,13 @@ classifiers = [
 
 keywords = ["sieve", "residual", "modulus", "set", "xenakis"]
 
+
+[project.urls]
+Homepage = "https://github.com/flexatone/xensieve-py"
+# Documentation = "https://readthedocs.org"
+Repository = "https://github.com/flexatone/xensieve-py.git"
+Issues = "https://github.com/flexatone/xensieve-py/issues"
+# Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+
 [tool.maturin]
 features = ["pyo3/extension-module"]
