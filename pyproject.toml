@@ -5,7 +5,7 @@ build-backend = "maturin"
 [project]
 name = "xensieve"
 dynamic = ["version"]
-description = "An Rust-backed implementation of the Xenakis Sieve"
+description = "A Rust-backed implementation of the Xenakis Sieve"
 
 authors = [{name = "Christopher Ariza"}]
 maintainers = [{name = "Christopher Ariza"}]
