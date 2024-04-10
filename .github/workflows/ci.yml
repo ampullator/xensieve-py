@@ -136,6 +136,8 @@ jobs:
           pip install xensieve --find-links dist --force-reinstall
           pip install pytest
           pytest
+          pip install mypy
+          mypy --strict tests
 
   #-----------------------------------------------------------------------------
   test-rust:
