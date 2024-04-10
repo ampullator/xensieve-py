@@ -10,4 +10,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = "0.20.0"
-xensieve = "0.5.0"
+xensieve = "0.5.1"
