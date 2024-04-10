@@ -4,13 +4,25 @@ build-backend = "maturin"
 
 [project]
 name = "xensieve"
+dynamic = ["version"]
+description = "An Rust-backed implementation of the Xenakis Sieve"
+
+authors = [{name = "Christopher Ariza"}]
+maintainers = [{name = "Christopher Ariza"}]
+readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.8"
 classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Artistic Software",
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
+    "Typing :: Typed",
 ]
-dynamic = ["version"]
+
+keywords = ["sieve", "residual", "modulus", "set", "xenakis"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
