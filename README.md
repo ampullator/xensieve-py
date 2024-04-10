@@ -18,6 +18,7 @@ This Python implementation wraps a Rust implementation and follows the Python im
 
 Code: https://github.com/flexatone/xensieve-py
 
+Packages: https://pypi.org/project/xensieve
 
 
 # Rust Implementation
