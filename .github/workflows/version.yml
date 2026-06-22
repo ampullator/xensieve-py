@@ -5,6 +5,12 @@ on:
   schedule:
     # every day, 4 AM PST
     - cron: "0 12 * * *"
+
+# Allow the default GITHUB_TOKEN to push the update branch and open a PR.
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
 
   check-for-update:
@@ -19,7 +25,7 @@ jobs:
 
       - name: Collect versions, fail if no updated needed
         run: |
-          export VERSION_XENSIEVE_CRATES=$(curl -s https://crates.io/api/v1/crates/xensieve | jq -r '.crate.max_stable_version')
+          export VERSION_XENSIEVE_CRATES=$(curl -s -A "xensieve-py-ci (https://github.com/ampullator/xensieve-py)" https://crates.io/api/v1/crates/xensieve | jq -r '.crate.max_stable_version')
           echo "version crates: $VERSION_XENSIEVE_CRATES"
           export VERSION_XENSIEVE_PYPI=$(curl -s https://pypi.org/pypi/xensieve/json | jq -r '.info.version')
           echo "version pypi: $VERSION_XENSIEVE_PYPI"
@@ -52,7 +58,7 @@ jobs:
 
       - name: Extract New Version
         run: |
-          export VERSION_XENSIEVE_CRATES=$(curl -s https://crates.io/api/v1/crates/xensieve | jq -r '.crate.max_stable_version')
+          export VERSION_XENSIEVE_CRATES=$(curl -s -A "xensieve-py-ci (https://github.com/ampullator/xensieve-py)" https://crates.io/api/v1/crates/xensieve | jq -r '.crate.max_stable_version')
           echo "VERSION_XENSIEVE_CRATES=$VERSION_XENSIEVE_CRATES" >> $GITHUB_ENV
           export NAME_BRANCH="content-update-${VERSION_XENSIEVE_CRATES}-${GITHUB_RUN_ID}"
           echo "NAME_BRANCH=$NAME_BRANCH" >> $GITHUB_ENV
@@ -72,7 +78,7 @@ jobs:
       - name: Commit to Git
         run: |
           git diff --stat
-          git config user.email "bot@xensieve.dev"
+          git config user.email "bot@ampullator.dev"
           git config user.name "Content Update Bot"
           git checkout -b "${NAME_BRANCH}"
           git commit -m "${NAME_BRANCH}" -a

@@ -7,7 +7,12 @@ from io import BytesIO
 import json
 
 def get_lib_version() -> str:
-    with request.urlopen("https://crates.io/api/v1/crates/xensieve") as response:
+    # crates.io rejects requests without an identifying User-Agent.
+    req = request.Request(
+        "https://crates.io/api/v1/crates/xensieve",
+        headers={"User-Agent": "xensieve-py-ci (https://github.com/ampullator/xensieve-py)"},
+    )
+    with request.urlopen(req) as response:
         result = BytesIO(response.read())
     return json.loads(result.read())['crate']['max_stable_version']
 
