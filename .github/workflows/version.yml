@@ -1,0 +1,96 @@
+name: Version Updater
+
+on:
+  workflow_dispatch:
+  schedule:
+    # every day, 4 AM PST
+    - cron: "0 12 * * *"
+jobs:
+
+  check-for-update:
+    name: Check for Update
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout xensieve-py
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          fetch-depth: 0
+
+      - name: Collect versions, fail if no updated needed
+        run: |
+          export VERSION_XENSIEVE_CRATES=$(curl -s https://crates.io/api/v1/crates/xensieve | jq -r '.crate.max_stable_version')
+          echo "version crates: $VERSION_XENSIEVE_CRATES"
+          export VERSION_XENSIEVE_PYPI=$(curl -s https://pypi.org/pypi/xensieve/json | jq -r '.info.version')
+          echo "version pypi: $VERSION_XENSIEVE_PYPI"
+          if [ "$VERSION_XENSIEVE_CRATES" == "$VERSION_XENSIEVE_PYPI" ]; then
+            echo "update needed: no"
+            exit 1
+          else
+            echo "update needed: yes"
+          fi
+
+
+  update-content:
+    name: Update Content
+    needs: [check-for-update]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout xensieve-py
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          fetch-depth: 0
+
+      - name: Checkout xensieve-rs
+        uses: actions/checkout@v4
+        with:
+          repository: 'ampullator/xensieve-rs'
+          path: 'xensieve-rs'
+          fetch-depth: 0
+          ref: ${{ env.VERSION_XENSIEVE_CRATES }}
+
+      - name: Extract New Version
+        run: |
+          export VERSION_XENSIEVE_CRATES=$(curl -s https://crates.io/api/v1/crates/xensieve | jq -r '.crate.max_stable_version')
+          echo "VERSION_XENSIEVE_CRATES=$VERSION_XENSIEVE_CRATES" >> $GITHUB_ENV
+          export NAME_BRANCH="content-update-${VERSION_XENSIEVE_CRATES}-${GITHUB_RUN_ID}"
+          echo "NAME_BRANCH=$NAME_BRANCH" >> $GITHUB_ENV
+
+      - uses: actions/setup-python@master
+        with:
+          python-version: '3.11'
+
+      - name: Process Changes
+        run: |
+          export PYTHONPATH="${PYTHONPATH}:."
+          python3 .github/workflows/version.py
+
+      - name: Remove xensieve-rs
+        run: rm -rf xensieve-rs
+
+      - name: Commit to Git
+        run: |
+          git diff --stat
+          git config user.email "bot@xensieve.dev"
+          git config user.name "Content Update Bot"
+          git checkout -b "${NAME_BRANCH}"
+          git commit -m "${NAME_BRANCH}" -a
+          git push origin ${NAME_BRANCH}
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_DATA=$(jq -n \
+            --arg title "Version Update ${VERSION_XENSIEVE_CRATES} (${GITHUB_RUN_ID})" \
+            --arg body "--" \
+            --arg head "${NAME_BRANCH}" \
+            --arg base "default" \
+            --argjson assignees '["flexatone"]' \
+            '{"title": $title, "body": $body, "head": $head, "base": $base}')
+
+          curl --location --request POST "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls" \
+            --header "Authorization: token ${GITHUB_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data "$PR_DATA"
