@@ -170,11 +170,11 @@ name = "xensieve"
 version = "0.8.0"
 dependencies = [
  "pyo3",
- "xensieve 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "xensieve 1.0.0",
 ]
 
 [[package]]
 name = "xensieve"
-version = "0.8.0"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8d3c658cba46323c5551899a953164f2346a11962ee7094c35b38412fe04431"
+checksum = "41037e50cd4d4d41e1221aaf827d5d751c5b9b8f70a8f902d3374b5536fae75a"

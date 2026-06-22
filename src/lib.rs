@@ -51,9 +51,13 @@ impl IterState {
 }
 
 /// The representation of a Xenakis Sieve, constructed from a string notation of one or more Residual classes combined with logical operators. This implementation, backed by a Rust implementation, follows the Python implementation in Ariza (2005), with significant performance and interface enhancements: https://direct.mit.edu/comj/article/29/2/40/93957
-#[pyclass(frozen)]
+// `unsendable`: the backing xensieve::Sieve is Rc-backed, so it is neither
+// Send nor Sync and must stay on the thread that created it.
+#[pyclass(unsendable)]
 struct Sieve {
-    pub(crate) s: SieveRS,
+    // Pin the generic Residual integer type to the widest unsigned type so
+    // Python's arbitrary-precision ints map to the largest possible moduli.
+    pub(crate) s: SieveRS<u128>,
 }
 
 #[pymethods]
@@ -61,7 +65,7 @@ impl Sieve {
     #[new]
     fn new(expr: String) -> Self {
         Self {
-            s: SieveRS::new(&expr),
+            s: SieveRS::<u128>::new(&expr),
         }
     }
 
@@ -70,55 +74,55 @@ impl Sieve {
     }
 
     /// Return true if the provided integer is included within the Sieve.
-    fn __contains__(&self, v: i64) -> bool {
-        self.s.contains(v as i128)
+    fn __contains__(&self, v: i128) -> bool {
+        self.s.contains(v)
     }
 
     //--------------------------------------------------------------------------
+    // The `&Sieve` operator impls only bump the inner Rc refcount (the Sieve
+    // tree is shared, never deep-copied), so borrowing avoids the explicit
+    // `.clone()` without changing the cost.
+
     /// Return the inverse of this Sieve.
     fn __invert__(&self) -> Self {
-        let new: SieveRS = !self.s.clone();
-        Self { s: new }
+        Self { s: !&self.s }
     }
 
     /// Return the XOR combination (or symmetric difference) of the provided Sieve with this Sieve.
     fn __xor__(&self, other: &Self) -> Self {
-        let new: SieveRS = self.s.clone() ^ other.s.clone();
-        Self { s: new }
+        Self { s: &self.s ^ &other.s }
     }
 
     /// Return the OR combination (or union) of the provided Sieve with this Sieve.
     fn __or__(&self, other: &Self) -> Self {
-        let new: SieveRS = self.s.clone() | other.s.clone();
-        Self { s: new }
+        Self { s: &self.s | &other.s }
     }
 
     /// Return the AND combination (or intersection) of the provided Sieve with this Sieve.
     fn __and__(&self, other: &Self) -> Self {
-        let new: SieveRS = self.s.clone() & other.s.clone();
-        Self { s: new }
+        Self { s: &self.s & &other.s }
     }
 
     //--------------------------------------------------------------------------
     /// Return an iterator of the integers defined within this Sieve, given an inclusive start integer and in exclusive stop integer.
-    fn iter_value(&self, start: i64, stop: i64) -> IterValue {
-        let iter = self.s.iter_value(start as i128..stop as i128);
+    fn iter_value(&self, start: i128, stop: i128) -> IterValue {
+        let iter = self.s.iter_value(start..stop);
         IterValue {
             iter: Box::new(iter),
         }
     }
 
     /// Return an iterator of the interval width between defined integers within this Sieve, given an inclusive start integer and in exclusive stop integer.
-    fn iter_interval(&self, start: i64, stop: i64) -> IterInterval {
-        let iter = self.s.iter_interval(start as i128..stop as i128);
+    fn iter_interval(&self, start: i128, stop: i128) -> IterInterval {
+        let iter = self.s.iter_interval(start..stop);
         IterInterval {
             iter: Box::new(iter),
         }
     }
 
     /// Return an iterator of the Boolean states of this Sieve, given an inclusive start integer and in exclusive stop integer.
-    fn iter_state(&self, start: i64, stop: i64) -> IterState {
-        let iter = self.s.iter_state(start as i128..stop as i128);
+    fn iter_state(&self, start: i128, stop: i128) -> IterState {
+        let iter = self.s.iter_state(start..stop);
         IterState {
             iter: Box::new(iter),
         }
