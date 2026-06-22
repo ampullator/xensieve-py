@@ -1,6 +1,6 @@
 [package]
 name = "xensieve"
-version = "0.8.0"
+version = "1.0.0"
 edition = "2021"
 
 [lib]
@@ -9,4 +9,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = "0.20.0"
-xensieve = "0.8.0"
+xensieve = "1.0.0"
