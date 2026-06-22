@@ -49,7 +49,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          pip install xensieve --find-links dist --force-reinstall
+          pip install xensieve --no-index --find-links dist --force-reinstall
           pip install pytest
           pytest
       # - name: pytest
@@ -99,7 +99,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          pip install xensieve --find-links dist --force-reinstall
+          pip install xensieve --no-index --find-links dist --force-reinstall
           pip install pytest
           pytest
 
@@ -129,11 +129,15 @@ jobs:
           name: wheels-macos-${{ matrix.target }}
           path: dist
       - name: pytest
-        if: ${{ !startsWith(matrix.target, 'aarch64') }}
+        # macos-latest runners are arm64, so only the native aarch64 wheel can
+        # be installed and run here; the cross-compiled x86_64 wheel cannot.
+        # `--no-index` keeps pip from silently falling back to the stale PyPI
+        # sdist when no compatible local wheel is present.
+        if: ${{ startsWith(matrix.target, 'aarch64') }}
         shell: bash
         run: |
           set -e
-          pip install xensieve --find-links dist --force-reinstall
+          pip install xensieve --no-index --find-links dist --force-reinstall
           pip install pytest
           pytest
           pip install mypy
