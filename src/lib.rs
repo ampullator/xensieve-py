@@ -90,17 +90,23 @@ impl Sieve {
 
     /// Return the XOR combination (or symmetric difference) of the provided Sieve with this Sieve.
     fn __xor__(&self, other: &Self) -> Self {
-        Self { s: &self.s ^ &other.s }
+        Self {
+            s: &self.s ^ &other.s,
+        }
     }
 
     /// Return the OR combination (or union) of the provided Sieve with this Sieve.
     fn __or__(&self, other: &Self) -> Self {
-        Self { s: &self.s | &other.s }
+        Self {
+            s: &self.s | &other.s,
+        }
     }
 
     /// Return the AND combination (or intersection) of the provided Sieve with this Sieve.
     fn __and__(&self, other: &Self) -> Self {
-        Self { s: &self.s & &other.s }
+        Self {
+            s: &self.s & &other.s,
+        }
     }
 
     //--------------------------------------------------------------------------
