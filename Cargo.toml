@@ -8,5 +8,5 @@ name = "xensieve"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.20.0"
+pyo3 = "0.25"
 xensieve = "0.8.0"

@@ -126,7 +126,7 @@ impl Sieve {
 }
 
 #[pymodule]
-fn xensieve(_py: Python, m: &PyModule) -> PyResult<()> {
+fn xensieve(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Sieve>()?;
     Ok(())
 }
