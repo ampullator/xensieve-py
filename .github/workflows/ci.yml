@@ -144,7 +144,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest,]
-        rust: ["1.60.0", stable]
+        rust: ["1.87.0", stable]
 
     name: Test Rust / ${{ matrix.os }} / Rust ${{ matrix.rust }}
     runs-on: ${{ matrix.os }}
